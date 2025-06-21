@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
-import androidx.navigation3.runtime.NavEntryDecorator
 import androidx.navigation3.runtime.entry
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -17,12 +16,13 @@ import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 import com.phattarapong.navigation3.navigation.Destination
-import com.phattarapong.navigation3.ui.EditProfileScreen
+import com.phattarapong.navigation3.ui.EditProductScreen
 import com.phattarapong.navigation3.ui.ProductDetailScreen
 import com.phattarapong.navigation3.ui.ProductListScreen
 import com.phattarapong.navigation3.ui.theme.Navigation3Theme
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,9 +30,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             val backStack = rememberNavBackStack(Destination.ProductList)
             Navigation3Theme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                Scaffold(modifier = Modifier.fillMaxSize()) { _ ->
                     NavDisplay(
-                        modifier = Modifier.padding(innerPadding),
                         backStack = backStack,
                         onBack = {
                             backStack.removeLastOrNull()
@@ -58,13 +57,22 @@ class MainActivity : ComponentActivity() {
                                     id = key.id,
                                     navigateEditProduct = { id ->
                                         backStack.add(Destination.EditProduct(id))
+                                    },
+                                    onBackClick = {
+                                        backStack.removeLastOrNull()
                                     }
                                 )
                             }
 
                             entry<Destination.EditProduct> { key ->
-                                EditProfileScreen(
-                                    id = key.id
+                                EditProductScreen(
+                                    id = key.id,
+                                    onBackClick = {
+                                        backStack.removeLastOrNull()
+                                    },
+                                    onSaveSuccess = {
+                                        backStack.removeLastOrNull()
+                                    }
                                 )
                             }
                         }
